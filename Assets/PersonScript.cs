@@ -13,6 +13,7 @@ public class PersonScript : MonoBehaviour
     private Vector3 initialPosition;
     private Vector3 initialCameraPosition;
     private bool wasSwinging = false; 
+    public static bool isSlideable = false;
 
     public void Reset()
     {
@@ -24,6 +25,7 @@ public class PersonScript : MonoBehaviour
         Camera.main.transform.position = initialCameraPosition;
         // Logger 
         Debug.Log("Reset");
+        FishScript.score = "";
     }
 
 
@@ -31,6 +33,8 @@ public class PersonScript : MonoBehaviour
     {
         // copy the initial position of the fish
         initialPosition = fish.transform.position;
+        
+        // check if initialCamera position is null
         initialCameraPosition = Camera.main.transform.position;
 
         if (GetComponent<Collider2D>() == null)
@@ -60,18 +64,28 @@ public class PersonScript : MonoBehaviour
             }
         }
 
+        if (fishDropped && wasSwinging)
+        {
+            MoveCamera();
+        }
+
+    }
+
+    private void MoveCamera()  
+    {
+        Vector3 cameraPos = Camera.main.transform.position;
+        Vector3 fishPos = fish.transform.position;
+        cameraPos.x = Mathf.Lerp(cameraPos.x, fishPos.x - 5, 0.01f); // 5 is the left offset
+        Camera.main.transform.position = cameraPos;
     }
 
     private void DropFish()
     {
-        // add a Rigidbody2D component to the fish game object if it doesn't already have one
         if (fish.GetComponent<Rigidbody2D>() != null)
         {
             Destroy(fish.GetComponent<Rigidbody2D>());
         }
         fish.AddComponent<Rigidbody2D>();
-        // remove old Rigidbody2D component and add a new one
-
         fishRigidbody = fish.GetComponent<Rigidbody2D>();
         fishDropped = true;
     }
@@ -79,24 +93,29 @@ public class PersonScript : MonoBehaviour
     {
         Vector2 personPos = transform.position;
         Vector2 fishPos = fish.transform.position;
-        float distance = Vector2.Distance(personPos, fishPos);
+        //float distance = Vector2.Distance(personPos, fishPos);
 
-        // interpolate between the left direction and the direction to the person based on the distance
+        float distance = (personPos - fishPos).sqrMagnitude;
+
         Vector2 direction = Vector2.Lerp(Vector2.left, personPos - fishPos, distance / 10);
-        // add an upward or downward vector to the direction based on the relative positions of the fish and person
+
         if (personPos.y > fishPos.y)
         {
             direction += Vector2.down;
+            PersonScript.isSlideable = true;
         }
         else if (personPos.y < fishPos.y)
         {
+
             direction += Vector2.up;
+            PersonScript.isSlideable = false;
         }
 
-        float force = Mathf.Clamp(distance * 15, 0, 100);
+        float minForce = 50;
+        float maxForce = 100;
+        float randomForce = Random.Range(minForce, maxForce);
 
-
-        // check if the person and fish objects are colliding
+        float force = Mathf.Clamp((distance * 2500 / 100), 0, 100) + randomForce / 70;
         if (Physics2D.IsTouching(GetComponent<Collider2D>(), fish.GetComponent<Collider2D>()))
         {
             fishRigidbody.velocity = new Vector2(fishRigidbody.velocity.x, 0);
