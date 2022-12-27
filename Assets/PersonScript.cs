@@ -7,6 +7,11 @@ public class PersonScript : MonoBehaviour
     [SerializeField]
     private GameObject fish; // drag the fish game object into this field in the inspector
     private GameObject camera;
+     public Sprite img1 , img2;
+
+
+    [SerializeField]
+    private GameObject playerPicture;
 
     private Rigidbody2D fishRigidbody;
     private bool fishDropped = false;
@@ -26,6 +31,7 @@ public class PersonScript : MonoBehaviour
         // Logger 
         Debug.Log("Reset");
         FishScript.score = "";
+        playerPicture.GetComponent<SpriteRenderer>().sprite = img1; 
     }
 
 
@@ -57,6 +63,7 @@ public class PersonScript : MonoBehaviour
             else if (!wasSwinging)
             {
                 SwingBat();
+                playerPicture.GetComponent<SpriteRenderer>().sprite = img2; 
                 wasSwinging = true;
             } else 
             {
@@ -75,9 +82,12 @@ public class PersonScript : MonoBehaviour
     {
         Vector3 cameraPos = Camera.main.transform.position;
         Vector3 fishPos = fish.transform.position;
-        cameraPos.x = Mathf.Lerp(cameraPos.x, fishPos.x - 5, 0.01f); // 5 is the left offset
+        if (cameraPos.x >= fishPos.x)
+        {
+        cameraPos.x = fishPos.x;//Mathf.Lerp(cameraPos.x, fishPos.x - 5, 0.01f); // 5 is the left offset
         Camera.main.transform.position = cameraPos;
-    }
+        }
+}
 
     private void DropFish()
     {
@@ -112,10 +122,10 @@ public class PersonScript : MonoBehaviour
         }
 
         float minForce = 50;
-        float maxForce = 100;
+        float maxForce = 500;
         float randomForce = Random.Range(minForce, maxForce);
 
-        float force = Mathf.Clamp((distance * 2500 / 100), 0, 100) + randomForce / 70;
+        float force = Mathf.Clamp((distance * 2500 / 150), 0, 100) + randomForce / 70;
         if (Physics2D.IsTouching(GetComponent<Collider2D>(), fish.GetComponent<Collider2D>()))
         {
             fishRigidbody.velocity = new Vector2(fishRigidbody.velocity.x, 0);

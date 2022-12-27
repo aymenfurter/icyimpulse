@@ -13,8 +13,8 @@ public class FishScript : MonoBehaviour
 
     private void Start()
     {
-        labelStyle.fontSize = 32;
-        labelStyle.normal.textColor = Color.black;
+        labelStyle.fontSize = 64;
+        labelStyle.normal.textColor = Color.grey;
         labelStyle.alignment = TextAnchor.MiddleCenter;
     }
 
