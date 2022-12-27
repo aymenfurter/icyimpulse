@@ -13,14 +13,13 @@ public class FishScript : MonoBehaviour
 
     private void Start()
     {
-        labelStyle.fontSize = 64;
+        labelStyle.fontSize = 90;
         labelStyle.normal.textColor = Color.grey;
         labelStyle.alignment = TextAnchor.MiddleCenter;
     }
 
     private void Update()
     {
-
         if (sliding)
         {
             GameObject fish = this.gameObject;
@@ -39,7 +38,42 @@ public class FishScript : MonoBehaviour
 
 private void OnGUI()
 {
-        GUI.Label(new Rect(Screen.width / 2, 50, 100, 50),  score, labelStyle);
+    GUIStyle labelStyle = new GUIStyle();
+
+    // specify the font size and font color for the label
+    labelStyle.fontSize = 90;
+    labelStyle.normal.textColor = Color.black;
+
+    // specify the content offset for the label
+    labelStyle.contentOffset = new Vector2(1, 0);
+
+    // draw the label with the specified style and content offset
+    GUI.Label(new Rect(Screen.width / 2 - 230, 50, 100, 50),  score, labelStyle);
+
+    // change the content offset for the label
+    labelStyle.contentOffset = new Vector2(-1, 0);
+
+    // draw the label with the modified content offset
+    GUI.Label(new Rect(Screen.width / 2 - 230, 50, 100, 50),  score, labelStyle);
+
+    // change the content offset for the label
+    labelStyle.contentOffset = new Vector2(0, 1);
+
+    // draw the label with the modified content offset
+    GUI.Label(new Rect(Screen.width / 2 - 230, 50, 100, 50),  score, labelStyle);
+
+    // change the content offset for the label
+    labelStyle.contentOffset = new Vector2(0, -1);
+
+    // draw the label with the modified content offset
+    GUI.Label(new Rect(Screen.width / 2 - 230, 50, 100, 50),  score, labelStyle);
+
+    // reset the content offset for the label
+    labelStyle.contentOffset = Vector2.zero;
+
+    // draw the label with the original content offset
+    labelStyle.normal.textColor = Color.white;
+    GUI.Label(new Rect(Screen.width / 2 - 230, 50, 100, 50),  score, labelStyle);
 }
 
     private void OnCollisionEnter2D(Collision2D collision)

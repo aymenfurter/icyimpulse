@@ -10,6 +10,10 @@ public class PersonScript : MonoBehaviour
      public Sprite img1 , img2;
 
 
+
+    [SerializeField]
+    private GameObject intro;
+
     [SerializeField]
     private GameObject playerPicture;
 
@@ -19,6 +23,9 @@ public class PersonScript : MonoBehaviour
     private Vector3 initialCameraPosition;
     private bool wasSwinging = false; 
     public static bool isSlideable = false;
+    private bool hasStarted = false;
+    public AudioClip audioClip;
+    public AudioClip swingClip;
 
     public void Reset()
     {
@@ -43,19 +50,32 @@ public class PersonScript : MonoBehaviour
         // check if initialCamera position is null
         initialCameraPosition = Camera.main.transform.position;
 
-        if (GetComponent<Collider2D>() == null)
-        {
-            gameObject.AddComponent<BoxCollider2D>();
-            fish.AddComponent<BoxCollider2D>();
-            GetComponent<Collider2D>().isTrigger = true;
-        }
+        var audioSource = gameObject.AddComponent<AudioSource>();
+
+        // Set the audio clip
+        audioSource.clip = audioClip;
+        audioSource.loop = true;
+
+        // Play the audio
+        audioSource.Play();
     }
 
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
+            if (!hasStarted) 
+            {
+                if (GetComponent<Collider2D>() == null)
+                {
+                    gameObject.AddComponent<BoxCollider2D>();
+                    fish.AddComponent<BoxCollider2D>();
+                    GetComponent<Collider2D>().isTrigger = true;
+                }
+                hasStarted = true;
+            }
 
+            intro.SetActive(false);
             if (!fishDropped)
             {
                 DropFish();
@@ -63,6 +83,7 @@ public class PersonScript : MonoBehaviour
             else if (!wasSwinging)
             {
                 SwingBat();
+                PlaySwingSound();
                 playerPicture.GetComponent<SpriteRenderer>().sprite = img2; 
                 wasSwinging = true;
             } else 
@@ -76,6 +97,17 @@ public class PersonScript : MonoBehaviour
             MoveCamera();
         }
 
+    }
+
+    private void PlaySwingSound() 
+    {
+        var audioSource = gameObject.AddComponent<AudioSource>();
+
+        // Set the audio clip
+        audioSource.clip = swingClip;
+
+        // Play the audio
+        audioSource.Play();
     }
 
     private void MoveCamera()  
